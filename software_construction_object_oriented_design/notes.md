@@ -3,8 +3,8 @@
 1. 很多程序中都使用了异常机制，异常机制时如何提出的，用来解决哪些问题
 
 
-###5. Designing Robust Classes
-####5.0 Long Form Problems :CoffeeMaker Project
+### 5. Designing Robust Classes
+#### 5.0 Long Form Problems :CoffeeMaker Project
 **What you will learn about in this project:**
 
 - Designing your own Exception classes
@@ -15,7 +15,7 @@
 - Testing exceptions
 - Robust method specification, use, testing and implementation
 
-####5.1 Module Overview
+#### 5.1 Module Overview
 **Things You'll Learn**
 
 - How to use Exceptions to design programs that can recover from exceptional states. 
@@ -42,7 +42,7 @@ that are easier to read and maintain.
 - Assertions are checks that are placed within your code to assess whether a class's internal state is consistent with its specification.  Assertions allow you to discover issues with your code, prior to deploying it to users.
 If the exception is not caught it keeps falling down the alternate exceptional path until the program effectively crashes
 
-####5.4 Exceptions 
+#### 5.4 Exceptions 
 ##### 5.4.1 Throwing an Exception
 
 **Technical points in this video**
@@ -165,5 +165,94 @@ try {
 - A nice benefit of assertions is that they have access to private data within the class, so checking internal state is very straightforward.
 - All the extra code associated with assertions will make your code run more slowly, so we use a compiler option to turn them off when we're deploying the code for use outside of testing.
 
+### 6. Designing Robust Classes
+#### 6.0 Long Form Problems : FitLifeGymOOD 
 
+#### 6.1 Module Overview
+Design is a critical step of constructing a software system. Good designs solve the problem at hand and exhibit desirable characteristics, such as being evolvable.
+
+In this module we'll talk about extracting design from systems. This will involve using some diagrams that you're familiar with, and some that are completely new, to capture the design of systems - both their architecture, and their behaviour. In the next module we'll do the reverse, and learn how to implement a system based on these types of diagrams. 
+
+Things You'll Learn
+
+- How  to extract the design of an existing system and record it using a UML class diagram.
+- The different ways classes can rely on each other including associations, aggregations and dependencies.
+- How to extract UML sequence diagrams from existing cod
+
+#### 6.2 Introduction to Extracting and Implementing Object-Oriented Design  
+
+We're going to look at, first, looking at an existing system
+and extracting a design from it so that we can think about it at a higher
+level of abstraction.
+And we're also going to look at when we've
+been presented with the design, how we actually realized that in code.
+
+#### 6.3 Extracting Class Hierarchy  
+
+**Technical points in this video:**
+
+- To Extract a class hierarchy we look at all the "extends" and "implements" relationships between classes and interfaces in our system. 
+- If one class extends another, then we draw a big arrow from the subclass to the superclass.  This is also true if we have an interface extend another interface (interfaces can extend interfaces!).  We use the same arrow for extends regardless of what type of thing is doing the extending.
+
+
+![extends.png](./extends.png)
+
+
+- If one class implements an interface, then we draw a big arrow with a dashed line from the implementing class to the interface.
+
+ 
+![implements.png](./implements.png)
+
+
+- Note that in these diagrams, it is important to include the “interface” and “abstract” annotations to make clear the kind of type for each element. 
+
+
+
+
+So what that means is that we're going to look at some code
+and we're going to be extracting three different models from that code.
+We're going to extract class hierarchy.
+We're going to extract associations.
+Associations are the relationships between classes
+if they need or depend on one another.
+And finally, we're going to look at extracting a sequence diagram, which
+is a dynamic diagram of how objects relate to one another
+through a certain sequence of execution.
+
+#### 6.4  Extracting Associations
+**Technical points in this video:**
+
+- To Extract associations we look at the fields within the classes. 
+- If a class contains a field of another type, then we say that the class is associated with that other type.
+- We would draw the association on the diagram, and indicate what the arity of the association is (how many of that type, the class has).  For instance, if you had a class Dog, that had one Toy, you would see the field declared in the class as is shown on the left, with the corresponding association in the diagram as shown on the right, with the number 1, clearly marked next to the Toy class. If the Dog had a collection of Toys (like a list, for instance), we would instead have placed a 0..* annotation next to the arrowhead, to indicate an arbitrary number of toys.
+
+![association.png](./association.png)
+
+```
+
+public class Dog {
+    private Toy toy;
+}
+```
+
+- An Aggregation relationship can be thought of as a whole-part relationship. If one object is part of another object, then we use a diamond at the start of the arrow (next to the containing object), and a normal arrow at the end.  
+同生命周期？
+
+
+![aggregation.png](./aggregation.png)
+
+#### 6.5 Extracting Sequence Diagrams
+
+**Technical points in this video:**
+- A sequence diagram depicts the calls between objects while the system is running.  It’s essentially a vertical timeline of calls, that flows from top to bottom.
+- A sequence diagram starts with a particular method call -- so effectively, we are drawing the sequence of calls triggered by one method.  
+- At the top of the diagram, all the objects that are “alive” through the execution of the method are depicted.  They then have lifelines (timelines) extending down from them.
+To show a method’s execution on the timeline, we draw a box that overlays the timeline.  The box extends for as long as that method runs.  
+- Calls to a method are depicted as arrows with the name of the method sitting as the label.  Parameters are listed in parentheses.  The destination object for a call is the object in which that method is implemented.  The call arrow extends from the calling object’s method to the called method.
+- We refer to the Object’s name consistently in parameter lists as whatever label is in the Object’s box at the top, even though in the code the name of the object might be changing.  
+
+- Loops are shown in sequence diagram by placing a box around all the looped behaviour, and putting the condition of the loop in the corner.
+- Conditional behaviour is shown the same way: a box around all the conditional behaviour, with the condition indicated in the corner.
+
+- Lists are Java objects we often include in sequence diagrams, especially in this course. When checking whether something is in a list, or getting something from a list, we show the calls to the list object itself. So the list object will have its own lifeline, and a call to contains(element) will be shown extending from the caller to the list object, which then returns a boolean with the element. To loop through a list we show the caller getting the next element from the list, if there is one present.
 
