@@ -256,3 +256,24 @@ To show a method’s execution on the timeline, we draw a box that overlays the 
 
 - Lists are Java objects we often include in sequence diagrams, especially in this course. When checking whether something is in a list, or getting something from a list, we show the calls to the list object itself. So the list object will have its own lifeline, and a call to contains(element) will be shown extending from the caller to the list object, which then returns a boolean with the element. To loop through a list we show the caller getting the next element from the list, if there is one present.
 
+    ```
+
+    public class RegistrationSystem {
+        private List<Student> students;
+
+        public void printRecords() {
+            for (Student s : students) {
+                print(s.getRec());
+                // We've added a print
+                // statement to consume
+                // the String type result
+                // of getRec()-- this is
+                // different from the
+                // drawing in the video.
+            }
+        }
+    }
+    ```
+
+![sequence_diagrams.png](./sequence_diagrams.png)
+
