@@ -277,3 +277,37 @@ To show a method’s execution on the timeline, we draw a box that overlays the 
 
 ![sequence_diagrams.png](./sequence_diagrams.png)
 
+### 7. Implementing Object-Oriented Design  
+#### 7.1 Implementing Object-Oriented Design
+In this module, we will consider how to implement a given OO design, largely by translating a UML class diagram into code
+
+**Things You'll Learn**
+
+- How to express a UML class diagram as a Java program, including expressing associations and aggregations
+- How to initialize and set fields that depend on each other
+- How to ensure a Java class can be used correctly with the Java Collections Framework by correctly overriding appropriate methods (e.g., equals, hashCode)
+
+####7.2 Implementing Fields  
+**Technical points in this video:**
+
+- To Implement Fields we look at associations between classes.
+
+- The type of the field is determined by the destination type of the association arrow.  
+
+The arity of the field (whether it is a collection, a few individual fields, or a single field) is determined by the arity on the association, plus some domain analysis -- would you want, for instance, a list of dog toys, or four individual dog toys (stuffie, squeakie, chewie, and a ball, for instance).   
+
+
+
+- If a field is a collection, you need to decide which kind of collection it should be, based on the design problem at hand.  You may want a collection that is... 
+
+ - Fast for searching (Sets)
+
+ - Preserves order of insertion (List)
+
+ - Fast for inserting at the end of the list (Linked List) 
+
+- Two kinds of Lists we have seen are ArrayList and LinkedList.  An ArrayList is contiguous spots in memory, with a reference to the head of the list.  A LinkedList is records that are stored in memory, each with a reference to the next. The LinkedList keeps a reference to the head of the list, and also the tail.
+
+- One kind of Set is a HashSet.  A HashSet is like a table, or dictionary, where there are a sequence of buckets into which elements can be sorted.  The function that determines which bucket an element goes into is called a hash function, or hash() and it is usually based on the values stored inside the object. Each bucket is actually a linked list of elements.  To make sure no linked list gets too long, a large number of buckets is allocated, and the hash function uses prime numbers to reduce the chance of collisions, the situation in which two elements are placed in the same bucket.
+
+- When a field is included in a class, it is typically initialized by the end of the constructor. Typically it takes its value either through instantiating an object of the correct type, or from a parameter passed into the constructor.
