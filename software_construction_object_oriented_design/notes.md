@@ -311,3 +311,25 @@ The arity of the field (whether it is a collection, a few individual fields, or 
 - One kind of Set is a HashSet.  A HashSet is like a table, or dictionary, where there are a sequence of buckets into which elements can be sorted.  The function that determines which bucket an element goes into is called a hash function, or hash() and it is usually based on the values stored inside the object. Each bucket is actually a linked list of elements.  To make sure no linked list gets too long, a large number of buckets is allocated, and the hash function uses prime numbers to reduce the chance of collisions, the situation in which two elements are placed in the same bucket.
 
 - When a field is included in a class, it is typically initialized by the end of the constructor. Typically it takes its value either through instantiating an object of the correct type, or from a parameter passed into the constructor.
+
+
+####7.4 Implementing Relationships
+
+**Technical points in this video:**
+
+- There are three kinds of **Bi-Directional Relationships**: one-one relationships, one-many relationships, and many-many relationships.
+- In each of these relationships, there is typically a design assumption that the association will be maintained programmatically.
+- To enforce the reflexive relationship, the setter for the field in one object must call the setter for the field in the other object, passing itself as a parameter. To guard against an infinite sequence, each setter checks whether the work has already been done (whether the other object’s field is already set) before calling the setter.
+- This same two-way setter pattern is applied to both individual fields, and collections.
+
+
+#### 7.5 Implementing Sequence Diagrams
+**Technical points in this video:**
+
+- When Implementing Sequence Diagrams begin by looking at the method coming in from the side -- this tells us the name of the method being implemented.
+- For each method depicted in the diagram, build a sequence of calls, based on what appears in the diagram.
+- Methods are always implemented in the object that is at the arrow head, also called the receiver of the message or the receiver of the method call.  
+- Look at the return arrow for clues about the return type of each method.  
+- Parameter types must remain as shown in the diagram, but the names within each method can be chosen individually. 
+- If a loop box is drawn, place all calls within the loop box into a loop in the implementation.  Make a design choice about what kind of loop to use.
+- If a conditional box is drawn, place all calls within the conditional box into a condition (if-statement) in the implementation.
