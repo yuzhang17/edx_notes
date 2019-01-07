@@ -364,12 +364,17 @@ The arity of the field (whether it is a collection, a few individual fields, or 
 - A symptom of having two responsibilities is having multiple clusters of methods, with each cluster referring to their own data within the class.  Each cluster may represent its own responsibility, and may be best separated into its own class.
 
 #### 7.5 Technical points in this video:
+<<<<<<< 0a85819c98c3a2877543d7f11106fcc97844838a
 - Coupling between two classes indicates that two classes collaborate in some way.  
+=======
+- Coupling between two classes indicates that two classes collaborate in some way. 
+>>>>>>> Busy's Diner step4 complete
 
 - Inter-class coupling can be through method calls, dependencies, or by holding functionality in common that accomplishes a goal without explicitly declaring as such.
 
 - The seriousness of kinds of coupling is directly related to the propagation of changes in the system:
 
+<<<<<<< 0a85819c98c3a2877543d7f11106fcc97844838a
 - Low: a change in one place requires no change in a collaborating class
 
 - Medium: a change in one class does require a remote change, but the compiler warns the developer that the change is needed.  An example of this is when a checked exception is declared to be thrown, the compiler will alert the developer that it must be caught at the calling location.  Method signature changes are also checked by the compiler, as are Type changes.
@@ -377,3 +382,26 @@ The arity of the field (whether it is a collection, a few individual fields, or 
 - High: a change in one class does require a remote change, but the collaboration will only be detected at runtime -- meaning you have to run the code to see that the change has affected other classes. 
 
 - Coupling can also be considered architecturally, where we look at the relationships between classes to see if the overall design is being maintained.
+=======
+ - Low: a change in one place requires no change in a collaborating class
+
+ - Medium: a change in one class does require a remote change, but the compiler warns the developer that the change is needed.  An example of this is when a checked exception is declared to be thrown, the compiler will alert the developer that it must be caught at the calling location.  Method signature changes are also checked by the compiler, as are Type changes.
+
+ - High: a change in one class does require a remote change, but the collaboration will only be detected at runtime -- meaning you have to run the code to see that the change has affected other classes.
+
+- Coupling can also be considered architecturally, where we look at the relationships between classes to see if the overall design is being maintained.
+
+- One way to refactor semantic coupling is to introduce a new type of object to reduce duplication. Imagine if we had a Dish object associated with every Order. Each Dish could have its own ingredients list and recipe, which would be used by Server and Chef. This would reduce the “hard coding” of the recipe and ingredients that's causing the coupling.
+
+#### 7.6 Liskov Substitution Principle
+**Technical points in this video:**
+
+- The Liskov Substitution Principle states that for a subclass to be substitutable for its superclass, the subclass cannot break the expectations that a user of the superclass would have.  Thus, it cannot reduce the service it provides, and cannot produce effects not produced in the superclass.
+
+- It formally states that 
+
+ - the preconditions of a subclass’s behaviour (methods) cannot be strengthened, meaning (among other things) that a sub-method cannot accept a narrower range of inputs than the original method.
+
+ - The post conditions of a sub-method cannot be weakened, meaning that the sub-method cannot have a broader range of effect than the original method.
+- 违反LiskovSubstitutionPrince 可以使用 关联关系或者拆出接口来实现。precondition使用关联，postcondition使用接口，把父类的能力拆分出去。
+>>>>>>> Busy's Diner step4 complete
