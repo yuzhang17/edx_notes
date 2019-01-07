@@ -362,3 +362,18 @@ The arity of the field (whether it is a collection, a few individual fields, or 
 - If, over time, a class seems like it has more than one responsibility, it can be split into two separate classes
 
 - A symptom of having two responsibilities is having multiple clusters of methods, with each cluster referring to their own data within the class.  Each cluster may represent its own responsibility, and may be best separated into its own class.
+
+#### 7.5 Technical points in this video:
+- Coupling between two classes indicates that two classes collaborate in some way.  
+
+- Inter-class coupling can be through method calls, dependencies, or by holding functionality in common that accomplishes a goal without explicitly declaring as such.
+
+- The seriousness of kinds of coupling is directly related to the propagation of changes in the system:
+
+- Low: a change in one place requires no change in a collaborating class
+
+- Medium: a change in one class does require a remote change, but the compiler warns the developer that the change is needed.  An example of this is when a checked exception is declared to be thrown, the compiler will alert the developer that it must be caught at the calling location.  Method signature changes are also checked by the compiler, as are Type changes.
+
+- High: a change in one class does require a remote change, but the collaboration will only be detected at runtime -- meaning you have to run the code to see that the change has affected other classes. 
+
+- Coupling can also be considered architecturally, where we look at the relationships between classes to see if the overall design is being maintained.
