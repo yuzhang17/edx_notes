@@ -333,3 +333,32 @@ The arity of the field (whether it is a collection, a few individual fields, or 
 - Parameter types must remain as shown in the diagram, but the names within each method can be chosen individually. 
 - If a loop box is drawn, place all calls within the loop box into a loop in the implementation.  Make a design choice about what kind of loop to use.
 - If a conditional box is drawn, place all calls within the conditional box into a condition (if-statement) in the implementation.
+
+
+### 8: Design Principles  
+#### 7.1 Module Overview
+**Things You'll Learn**
+
+- How to use the single-responsibility principle to reduce coupling and increase cohesion in your code
+- How to use the Liskov substitution principle to ensure your class hierarchies are creating good design
+- How to refactor code to fix design problems and adhere to these design principles
+
+#### 7.2 Introduction to Design Principles  
+
+#### 7.3  What are Design Principles?  
+
+- We introduce the concept of Object-Oriented Design Principles.
+- Design principles help guide the way we create software to attain certain very important software qualities, such as maintainability, and readability.  These principles help code to age gracefully.
+- We look at two principles out of the collection of OOD principles called SOLID: Single Responsibility, Open-Closed, Liskov Substitution, Interface Segregation and Dependency Inversion. Of those we will look at Single Responsibility and Liskov Substitution.
+
+
+#### 7,4 Single Responsibility Principle
+
+**Technical points in this video:**
+
+
+- The Single Responsibility Principle indicates that each class should be centered around one cohesive concept
+- When adding new functionality, consider into which class it would best fit
+- If, over time, a class seems like it has more than one responsibility, it can be split into two separate classes
+
+- A symptom of having two responsibilities is having multiple clusters of methods, with each cluster referring to their own data within the class.  Each cluster may represent its own responsibility, and may be best separated into its own class.
