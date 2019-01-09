@@ -336,23 +336,23 @@ The arity of the field (whether it is a collection, a few individual fields, or 
 
 
 ### 8: Design Principles  
-#### 7.1 Module Overview
+#### 8.1 Module Overview
 **Things You'll Learn**
 
 - How to use the single-responsibility principle to reduce coupling and increase cohesion in your code
 - How to use the Liskov substitution principle to ensure your class hierarchies are creating good design
 - How to refactor code to fix design problems and adhere to these design principles
 
-#### 7.2 Introduction to Design Principles  
+#### 8.2 Introduction to Design Principles  
 
-#### 7.3  What are Design Principles?  
+#### 8.3  What are Design Principles?  
 
 - We introduce the concept of Object-Oriented Design Principles.
 - Design principles help guide the way we create software to attain certain very important software qualities, such as maintainability, and readability.  These principles help code to age gracefully.
 - We look at two principles out of the collection of OOD principles called SOLID: Single Responsibility, Open-Closed, Liskov Substitution, Interface Segregation and Dependency Inversion. Of those we will look at Single Responsibility and Liskov Substitution.
 
 
-#### 7,4 Single Responsibility Principle
+#### 8.4 Single Responsibility Principle
 
 **Technical points in this video:**
 
@@ -363,26 +363,13 @@ The arity of the field (whether it is a collection, a few individual fields, or 
 
 - A symptom of having two responsibilities is having multiple clusters of methods, with each cluster referring to their own data within the class.  Each cluster may represent its own responsibility, and may be best separated into its own class.
 
-#### 7.5 Technical points in this video:
-<<<<<<< 0a85819c98c3a2877543d7f11106fcc97844838a
-- Coupling between two classes indicates that two classes collaborate in some way.  
-=======
+#### 8.5 Technical points in this video:
 - Coupling between two classes indicates that two classes collaborate in some way. 
->>>>>>> Busy's Diner step4 complete
 
 - Inter-class coupling can be through method calls, dependencies, or by holding functionality in common that accomplishes a goal without explicitly declaring as such.
 
 - The seriousness of kinds of coupling is directly related to the propagation of changes in the system:
 
-<<<<<<< 0a85819c98c3a2877543d7f11106fcc97844838a
-- Low: a change in one place requires no change in a collaborating class
-
-- Medium: a change in one class does require a remote change, but the compiler warns the developer that the change is needed.  An example of this is when a checked exception is declared to be thrown, the compiler will alert the developer that it must be caught at the calling location.  Method signature changes are also checked by the compiler, as are Type changes.
-
-- High: a change in one class does require a remote change, but the collaboration will only be detected at runtime -- meaning you have to run the code to see that the change has affected other classes. 
-
-- Coupling can also be considered architecturally, where we look at the relationships between classes to see if the overall design is being maintained.
-=======
  - Low: a change in one place requires no change in a collaborating class
 
  - Medium: a change in one class does require a remote change, but the compiler warns the developer that the change is needed.  An example of this is when a checked exception is declared to be thrown, the compiler will alert the developer that it must be caught at the calling location.  Method signature changes are also checked by the compiler, as are Type changes.
@@ -393,7 +380,7 @@ The arity of the field (whether it is a collection, a few individual fields, or 
 
 - One way to refactor semantic coupling is to introduce a new type of object to reduce duplication. Imagine if we had a Dish object associated with every Order. Each Dish could have its own ingredients list and recipe, which would be used by Server and Chef. This would reduce the “hard coding” of the recipe and ingredients that's causing the coupling.
 
-#### 7.6 Liskov Substitution Principle
+#### 8.6 Liskov Substitution Principle
 **Technical points in this video:**
 
 - The Liskov Substitution Principle states that for a subclass to be substitutable for its superclass, the subclass cannot break the expectations that a user of the superclass would have.  Thus, it cannot reduce the service it provides, and cannot produce effects not produced in the superclass.
@@ -403,5 +390,42 @@ The arity of the field (whether it is a collection, a few individual fields, or 
  - the preconditions of a subclass’s behaviour (methods) cannot be strengthened, meaning (among other things) that a sub-method cannot accept a narrower range of inputs than the original method.
 
  - The post conditions of a sub-method cannot be weakened, meaning that the sub-method cannot have a broader range of effect than the original method.
-- 违反LiskovSubstitutionPrince 可以使用 关联关系或者拆出接口来实现。precondition使用关联，postcondition使用接口，把父类的能力拆分出去。
->>>>>>> Busy's Diner step4 complete
+- 违反LiskovSubstitutionPrince 可以使用 关联关系或者拆出接口来实现。precondition使用关联，postcondition使用接口，把父类的能力拆分出去。也可以把公共部分提取出公共的父类，
+
+#### 8.7 Refactoring
+
+**Technical points in this video:**
+
+In this video we do two things: Use delegation to move functionality to a better location, and collapse code into methods to make the original method more readable.  There are no official technical points for this video -- instead it's interesting to see the steps we take:
+
+- One class is doing the work of two, so we move some functionality into a different class. In this case we do not want to change the call site (meaning that the original calls from main must, in this case, remain exactly as is).  We follow these steps: (1) create the new class; (2) copy the functionality and related fields into the new class; (3) leave the original methods in their original locations, but call replace the bodies with a call to the method in its new location.  Parameters are passed through to the new methods from the original methods.
+- We spot code that appears in two methods (duplicate code).  Duplicate code is often a target of restructuring because it signals that two methods should behave in the same way -- it's problematic to simply have the code appear twice, because changing the behaviour of one, requires a change to the behaviour of the other method.  Similarly, if we find a bug in one spot, we have to fix it in the other spot as well.  Often, we will forget to do this, and the functionality will break over time!  To remove the duplication, we can extract a method, and call that method from inside each of the original methods instead.  We use a refactoring feature "extract method", which will even spot that there are duplicates of the extracted code, and replace all the clones with a call to the newly made method.
+- We notice that a method is too difficult to understand. Rather than putting comments into the code, we extract methods to capture the behaviour of parts of the method.  The reason we don't just use comments is that comments can drift away (both physically and semantically!) from their corresponding code over time.
+
+### 8.8 Design Patterns   
+#### 8.1 Module Overview 
+**Things You'll Learn**
+
+- How Design Patterns can help you achieve good design
+- How to implement the Composite Pattern to design programs on mutually recursive data
+- How to implement the Observer Pattern to design programs that involve notifications, or one class monitoring another
+- How to implement the Iterator Pattern to iterate over classes that are not a Java Collection. 
+
+#### 8.2 Introduction to Design Patterns
+
+#### 8.3 Design Patterns
+**Technical points in this video:**
+
+- Object-oriented Design patterns are tried and true solutions to commonly encountered object oriented software development problems
+- We will be looking at three patterns:
+- The Composite Pattern, an OO solution for a hierarchical structure
+- The Observer Pattern, a solution for when one (or more) object(s) wants to watch the state of one (or more) other object(s)
+- The Iterator Pattern, which allows us to collect behaviour related to iterating over a collection
+
+#### 8.4 Composite Pattern
+**Technical points in this video:**
+- The Composite Pattern provides a design for a hierarchy, in which nodes with children differ in their behaviour from nodes with no children.  An example might be the display of a hierarchy, like a file system, where folders contain files.  Folders would be displayed differently from files, and would have contents (the files).
+- The pattern consists of three classes: the Composite (the node that can have children), the Leaf (no children), and the Component, which is a superclass extended by both the Composite and Leaf. 
+- The Composite has a collection of Components, so that the Composite class can loop through those Components without keeping track of whether the Component is actually a Composite or a Leaf.
+- The Composite also has an addComponent method so that Components can be added to its contents.
+- Without the Component super class abstraction, the Composite would have to maintain different lists for each kind of element in its contents, and would need to provide individual methods for adding contents, and displaying contents for each kind of content. 
