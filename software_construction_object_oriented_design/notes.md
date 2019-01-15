@@ -429,3 +429,51 @@ In this video we do two things: Use delegation to move functionality to a better
 - The Composite has a collection of Components, so that the Composite class can loop through those Components without keeping track of whether the Component is actually a Composite or a Leaf.
 - The Composite also has an addComponent method so that Components can be added to its contents.
 - Without the Component super class abstraction, the Composite would have to maintain different lists for each kind of element in its contents, and would need to provide individual methods for adding contents, and displaying contents for each kind of content. 
+
+#### 8.5 Observer Pattern
+##### 8.5.1  Observer Pattern   
+
+- The Observer Pattern is a design that lets one or more objects watch the state of one or more other objects.  
+
+- The watcher is referred to as the Observer
+
+- The watched object is referred to as the Subject
+
+- The pattern’s design centers around two phases:
+
+ - Registration: The Observer registers with the Subject, by calling a registration method on the subject (named something like register, or addObservers).  In that method, the Subject adds the Observer to its list of Observers.
+
+ - Notification: Whenever the Subject’s state changes, it notifies the observers by calling its own notify (or similarly named) method.  The notify method then iterates through the list of observers, calling update (or a similarly named method) on each one.  The Subject may send an argument with this method to indicate the change (the push model), or may send a reference to itself so that the Observer can call back to find out what changed for itself (the pull model). 
+
+8.5.2 Observer/Observable in Java
+
+- The Java language has built in support for the Observer Pattern, by way of two collaborating types: Observer and Observable.  
+
+- The Observer type is an interface that specifies the update method -- meaning any class that implements the Observer must have this method present in its implementation.
+
+- The Observable type is an abstract class that provides the base functionality of the role of the Subject.  Most prominently, it maintains a list of Observers, and has a notifyObservers method that loops through that list, calling update on each one.  For the notifyObservers method to take any effect, the method setChanged() must be called prior to the call to notifyObservers.  
+
+- To make use of these types, the intended Observer must implement the Observer interface, and implement the update method with the behaviour needed for its own purposes.  The intended Subject extends the Subject class, and makes the call to setChanged and notifyObservers method when its state changes.
+
+#### 8.6 Basic Iterator Pattern
+- The Iterator Pattern allows us to separate out all the logic for iterating over a collection.
+
+- Every kind of collection needs its own iterator, because each collection has its own structure -- the iterator logic provides a traversal of the collection that is tailored to that structure.  For instance, in an array, the iterator logic traverses the collection by moving from one spot in memory to the next.  
+
+- Java provides iterators for every collection in its language.  Each of those iterators extend the Iterator Interface (specifying the next and hasNext methods), and the collections each implement the Iterable Interface (which has one method iterator that returns a reference to the correct iterator for the collection.
+
+- If a class implements the Iterable Interface, then that class can be used in a foreach loop over elements of that class.  This is because the foreach loop is actually translated into a for loop as follows:
+
+        ```
+        for(TheElement element : elements){
+            element.doSomething();
+        }
+
+        //Turns into:
+
+        Iterator<TheElement> elementsIterator = elements.iterator();
+        while(elementsIterator.hasNext()){
+            TheElement element = elementsIterator.next();
+            element.doSomething();
+        }
+        ```
