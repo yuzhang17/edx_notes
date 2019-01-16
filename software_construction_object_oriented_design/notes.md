@@ -455,7 +455,8 @@ In this video we do two things: Use delegation to move functionality to a better
 
 - To make use of these types, the intended Observer must implement the Observer interface, and implement the update method with the behaviour needed for its own purposes.  The intended Subject extends the Subject class, and makes the call to setChanged and notifyObservers method when its state changes.
 
-#### 8.6 Basic Iterator Pattern
+#### 8.6 Iterator Pattern 
+##### 8.6.1 Basic Iterator Pattern
 - The Iterator Pattern allows us to separate out all the logic for iterating over a collection.
 
 - Every kind of collection needs its own iterator, because each collection has its own structure -- the iterator logic provides a traversal of the collection that is tailored to that structure.  For instance, in an array, the iterator logic traverses the collection by moving from one spot in memory to the next.  
@@ -477,3 +478,9 @@ In this video we do two things: Use delegation to move functionality to a better
             element.doSomething();
         }
         ```
+        
+##### 8.6.2 Advanced Iterator Pattern
+
+- Developers can create custom iterators for their own collections.
+- An iterator is implemented as an inner class of the collection, so that it can access private fields for the collection.  
+- The custom iterator implements the Iterator interface methods, and is parameterised with the type of element over which it will iterate.  It also maintains a pointer, or cursor, to keep track of the current position of the iteration.  This results in code that looks similar to this generic skeleton:
