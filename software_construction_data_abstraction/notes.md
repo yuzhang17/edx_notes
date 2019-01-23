@@ -33,3 +33,10 @@ how to read code :
 - Concentrate on import statements within your project
   A good starting point is the class that is runnable (the one with the play icon)  
 - Draw an informal picture to keep track of your exploration, and try to see the big picture as opposed to getting bogged down in details.
+
+
+
+![packagediagram](packagediagram-8285554.png)
+
+![claasdiagram](claasdiagram-8285612.png)
+
