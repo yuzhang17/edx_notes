@@ -1,5 +1,10 @@
 ##Software Construction: Object Oriented Design
+[TOC]
+
+
+
 ###0 联想问题记录
+
 1. 很多程序中都使用了异常机制，异常机制时如何提出的，用来解决哪些问题
 
 
@@ -165,7 +170,7 @@ try {
 - A nice benefit of assertions is that they have access to private data within the class, so checking internal state is very straightforward.
 - All the extra code associated with assertions will make your code run more slowly, so we use a compiler option to turn them off when we're deploying the code for use outside of testing.
 
-### 6. Designing Robust Classes
+### 6. Extracting Object-Oriented Design  
 #### 6.0 Long Form Problems : FitLifeGymOOD 
 
 #### 6.1 Module Overview
@@ -200,7 +205,7 @@ been presented with the design, how we actually realized that in code.
 
 - If one class implements an interface, then we draw a big arrow with a dashed line from the implementing class to the interface.
 
- 
+
 ![implements.png](./implements.png)
 
 
@@ -240,6 +245,8 @@ public class Dog {
 
 
 ![aggregation.png](./aggregation.png)
+
+
 
 #### 6.5 Extracting Sequence Diagrams
 
@@ -363,7 +370,10 @@ The arity of the field (whether it is a collection, a few individual fields, or 
 
 - A symptom of having two responsibilities is having multiple clusters of methods, with each cluster referring to their own data within the class.  Each cluster may represent its own responsibility, and may be best separated into its own class.
 
-#### 8.5 Technical points in this video:
+#### 8.5  Coupling
+
+#### Technical points in this video:
+
 - Coupling between two classes indicates that two classes collaborate in some way. 
 
 - Inter-class coupling can be through method calls, dependencies, or by holding functionality in common that accomplishes a goal without explicitly declaring as such.
@@ -402,8 +412,8 @@ In this video we do two things: Use delegation to move functionality to a better
 - We spot code that appears in two methods (duplicate code).  Duplicate code is often a target of restructuring because it signals that two methods should behave in the same way -- it's problematic to simply have the code appear twice, because changing the behaviour of one, requires a change to the behaviour of the other method.  Similarly, if we find a bug in one spot, we have to fix it in the other spot as well.  Often, we will forget to do this, and the functionality will break over time!  To remove the duplication, we can extract a method, and call that method from inside each of the original methods instead.  We use a refactoring feature "extract method", which will even spot that there are duplicates of the extracted code, and replace all the clones with a call to the newly made method.
 - We notice that a method is too difficult to understand. Rather than putting comments into the code, we extract methods to capture the behaviour of parts of the method.  The reason we don't just use comments is that comments can drift away (both physically and semantically!) from their corresponding code over time.
 
-### 8.8 Design Patterns   
-#### 8.1 Module Overview 
+### 9 Design Patterns   
+#### 9.1 Module Overview 
 **Things You'll Learn**
 
 - How Design Patterns can help you achieve good design
@@ -411,9 +421,9 @@ In this video we do two things: Use delegation to move functionality to a better
 - How to implement the Observer Pattern to design programs that involve notifications, or one class monitoring another
 - How to implement the Iterator Pattern to iterate over classes that are not a Java Collection. 
 
-#### 8.2 Introduction to Design Patterns
+#### 9.2 Introduction to Design Patterns
 
-#### 8.3 Design Patterns
+#### 9.3 Design Patterns
 **Technical points in this video:**
 
 - Object-oriented Design patterns are tried and true solutions to commonly encountered object oriented software development problems
@@ -422,16 +432,17 @@ In this video we do two things: Use delegation to move functionality to a better
 - The Observer Pattern, a solution for when one (or more) object(s) wants to watch the state of one (or more) other object(s)
 - The Iterator Pattern, which allows us to collect behaviour related to iterating over a collection
 
-#### 8.4 Composite Pattern
+#### 9.4 Composite Pattern
 **Technical points in this video:**
+
 - The Composite Pattern provides a design for a hierarchy, in which nodes with children differ in their behaviour from nodes with no children.  An example might be the display of a hierarchy, like a file system, where folders contain files.  Folders would be displayed differently from files, and would have contents (the files).
 - The pattern consists of three classes: the Composite (the node that can have children), the Leaf (no children), and the Component, which is a superclass extended by both the Composite and Leaf. 
 - The Composite has a collection of Components, so that the Composite class can loop through those Components without keeping track of whether the Component is actually a Composite or a Leaf.
 - The Composite also has an addComponent method so that Components can be added to its contents.
 - Without the Component super class abstraction, the Composite would have to maintain different lists for each kind of element in its contents, and would need to provide individual methods for adding contents, and displaying contents for each kind of content. 
 
-#### 8.5 Observer Pattern
-##### 8.5.1  Observer Pattern   
+#### 9.5 Observer Pattern
+##### 9.5.1  Observer Pattern   
 
 - The Observer Pattern is a design that lets one or more objects watch the state of one or more other objects.  
 
@@ -445,7 +456,7 @@ In this video we do two things: Use delegation to move functionality to a better
 
  - Notification: Whenever the Subject’s state changes, it notifies the observers by calling its own notify (or similarly named) method.  The notify method then iterates through the list of observers, calling update (or a similarly named method) on each one.  The Subject may send an argument with this method to indicate the change (the push model), or may send a reference to itself so that the Observer can call back to find out what changed for itself (the pull model). 
 
-8.5.2 Observer/Observable in Java
+##### 9.5.2 Observer/Observable in Java
 
 - The Java language has built in support for the Observer Pattern, by way of two collaborating types: Observer and Observable.  
 
@@ -455,8 +466,8 @@ In this video we do two things: Use delegation to move functionality to a better
 
 - To make use of these types, the intended Observer must implement the Observer interface, and implement the update method with the behaviour needed for its own purposes.  The intended Subject extends the Subject class, and makes the call to setChanged and notifyObservers method when its state changes.
 
-#### 8.6 Iterator Pattern 
-##### 8.6.1 Basic Iterator Pattern
+#### 9.6 Iterator Pattern 
+##### 9.6.1 Basic Iterator Pattern
 - The Iterator Pattern allows us to separate out all the logic for iterating over a collection.
 
 - Every kind of collection needs its own iterator, because each collection has its own structure -- the iterator logic provides a traversal of the collection that is tailored to that structure.  For instance, in an array, the iterator logic traverses the collection by moving from one spot in memory to the next.  
@@ -469,17 +480,17 @@ In this video we do two things: Use delegation to move functionality to a better
         for(TheElement element : elements){
             element.doSomething();
         }
-
+        
         //Turns into:
-
+        
         Iterator<TheElement> elementsIterator = elements.iterator();
         while(elementsIterator.hasNext()){
             TheElement element = elementsIterator.next();
             element.doSomething();
         }
         ```
-        
-##### 8.6.2 Advanced Iterator Pattern
+    
+##### 9.6.2 Advanced Iterator Pattern
 
 - Developers can create custom iterators for their own collections.
 - An iterator is implemented as an inner class of the collection, so that it can access private fields for the collection.  
