@@ -61,7 +61,23 @@ Learning Objectives:
 
 #### 2.2.1 Problem Overview
 
+- Understand the definition of the Fibonacci numbers.
+- Show that Fibonacci numbers become very large.
 
+#### 2.2.2 Naive Algorithm
 
+- Produce a simple algorithm to compute Fibonacci numbers.
+- Show that this algorithm is very slow
 
+#### 2.2.3 Efficient Algorithm
+
+- Compute Fibonacci numbers efficiently.
+
+#### 2.2.4 Summary
+
+- Introduced Fibonacci numbers.
+- Naive algorithm takes ridiculously long time on small examples.
+- Improved algorithm incredibly fast.
+
+***The right algorithm makes all the difference***
 
