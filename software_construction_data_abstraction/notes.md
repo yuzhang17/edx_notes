@@ -213,8 +213,11 @@ Over the next few TODO items, you'll create a gym to add to the chain. Your firs
 - Statements do not have their own values, hence cannot be passed as parameters.
 - In flowcharts, conditions have two outgoing arrows, True and False. 
 
-![flowChartIfElst](flowChartIfElst.png)
+![flowchartIf](flowchartIf.png)
 
+
+
+![flowChartIfElst](flowChartIfElst.png)
 
 
 ##### 2b.2.3 Foreach Loops
