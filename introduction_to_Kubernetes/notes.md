@@ -995,13 +995,240 @@ Let's take, for example, a scenario in which a user/client is connected to a Pod
 
 Unexpectedly, the Pod to which the user/client is connected dies, and a new Pod is created by the controller. The new Pod will have a new IP address, which will not be known automatically to the user/client of the earlier Pod.
 
+
+
+To overcome this situation, Kubernetes provides a higher-level abstraction called Service, which logically groups Pods and a policy to access them. This grouping is achieved via Labels and Selectors, which we talked about in the previous chapter. 
+
 ##### 9.2.2 Services
 
 For example, in the following graphical representation we have used the app keyword as a Label, and frontend and db as values for different Pods.
+
+![service1](service1.png)
 
 
 
 Using selectors (app==frontend and app==db), we can group them into two logical groups: one with 3 Pods, and one with just one Pod.
 
 We can assign a name to the logical grouping, referred to as a Service name. In our example, we have created two Services, frontend-svc and db-svc, and they have the app==frontend and the app==db Selectors, respectively.
+
+![service2](service2.png)
+
+##### 9.2.3 Service Object Example
+
+The following is an example of a Service object:
+
+```yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: frontend-svc
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+
+
+```
+
+In this example, we are creating a frontend-svc Service by selecting all the Pods that have the Label app set to the frontend. By default, each Service also gets an IP address, which is routable only inside the cluster. In our case, we have 172.17.0.4 and 172.17.0.5 IP addresses for our frontend-svc and db-svc Services, respectively. The IP address attached to each Service is also known as the ClusterIP for that Service.
+
+
+
+![service3](service3.png)
+
+The user/client now connects to a service via the IP address, which forwards the traffic to one of the Pods attached to it. A service does the load balancing while selecting the Pods for forwarding the data/traffic.
+
+While forwarding the traffic from the Service, we can select the target port on the Pod. In our example, for frontend-svc, we will receive requests from the user/client on Port 80. We will then forward these requests to one of the attached Pods on Port 5000. If the target port is not defined explicitly, then traffic will be forwarded to Pods on the port on which the Service receives traffic.
+
+A tuple of Pods, IP addresses, along with the targetPort is referred to as a Service endpoint. In our case, frontend-svc has 3 endpoints: 10.0.1.3:5000, 10.0.1.4:5000, and 10.0.1.5:5000.
+
+##### 9.2.4  kube-proxy
+
+All of the worker nodes run a daemon called kube-proxy, which watches the API server on the master node for the addition and removal of Services and endpoints. For each new Service, on each node, kube-proxy configures the iptables rules to capture the traffic for its ClusterIP and forwards it to one of the endpoints. When the service is removed, kube-proxy removes the iptables rules on all nodes as well.
+
+![service4](service4.png)
+
+##### 9.2.5 Service Discovery
+
+As Services are the primary mode of communication in Kubernetes, we need a way to discover them at runtime. Kubernetes supports two methods of discovering a Service:
+
+- Environment Variables
+   As soon as the Pod starts on any worker node, the kubelet daemon running on that node adds a set of environment variables in the Pod for all active Services. For example, if we have an active Service called redis-master, which exposes port 6379, and its ClusterIP is 172.17.0.6, then, on a newly created Pod, we can see the following environment variables:
+    REDIS_MASTER_SERVICE_HOST=172.17.0.6
+    REDIS_MASTER_SERVICE_PORT=6379
+    REDIS_MASTER_PORT=tcp://172.17.0.6:6379
+    REDIS_MASTER_PORT_6379_TCP=tcp://172.17.0.6:6379
+    REDIS_MASTER_PORT_6379_TCP_PROTO=tcp
+    REDIS_MASTER_PORT_6379_TCP_PORT=6379
+    REDIS_MASTER_PORT_6379_TCP_ADDR=172.17.0.6
+   With this solution, we need to be careful while ordering our Services, as the Pods will not have the environment variables set for Services which are created after the Pods are created.
+
+- DNS
+  Kubernetes has an add-on for DNS, which creates a DNS record for each Service and its format is like my-svc.my-namespace.svc.cluster.local. Services within the same Namespace can reach to other Services with just their name. For example, if we add a Service redis-master in the my-ns Namespace, then all the Pods in the same Namespace can reach to the redis Service just by using its name, redis-master. Pods from other Namespaces can reach the Service by adding the respective Namespace as a suffix, like redis-master.my-ns. 
+
+  This is the most common and highly recommended solution. For example, in the previous section's image, we have seen that an internal DNS is configured, which maps our Services frontend-svc and db-svc to 172.17.0.4 and 172.17.0.5, respectively. 
+
+##### 9.2.6 ServiceType
+
+While defining a Service, we can also choose its access scope. We can decide whether the Service:
+
+- Is only accessible within the cluster
+- Is accessible from within the cluster and the external world
+- Maps to an external entity which resides outside the cluster.
+
+Access scope is decided by ServiceType, which can be mentioned when creating the Service.
+
+
+
+##### 9.2.7 ServiceType: ClusterIP and NodePort
+
+ClusterIP is the default ServiceType. A Service gets its Virtual IP address using the ClusterIP. That IP address is used for communicating with the Service and is accessible only within the cluster. 
+
+With the NodePort ServiceType, in addition to creating a ClusterIP, a port from the range 30000-32767 is mapped to the respective Service, from all the worker nodes. For example, if the mapped NodePort is 32233 for the service frontend-svc, then, if we connect to any worker node on port 32233, the node would redirect all the traffic to the assigned ClusterIP - 172.17.0.4.
+
+By default, while exposing a NodePort, a random port is automatically selected by the Kubernetes Master from the port range 30000-32767. If we don't want to assign a dynamic port value for NodePort, then, while creating the service, we can also give a port number from the earlier specific range. 
+
+ ![nodeport](nodeport.png)
+
+The NodePort ServiceType is useful when we want to make our Services accessible from the external world. The end-user connects to the worker nodes on the specified port, which forwards the traffic to the applications running inside the cluster. To access the application from the external world, administrators can configure a reverse proxy outside the Kubernetes cluster and map the specific endpoint to the respective port on the worker nodes. 
+
+
+
+##### 9.2.8 ServiceType: LoadBalancer
+
+With the LoadBalancer ServiceType:
+
+- NodePort and ClusterIP Services are automatically created, and the external load balancer will route to them
+- The Services are exposed at a static port on each worker node
+- The Service is exposed externally using the underlying cloud provider's load balancer feature.
+
+![loadbalancer](loadbalancer.png)
+
+The LoadBalancer ServiceType will only work if the underlying infrastructure supports the automatic creation of Load Balancers and have the respective support in Kubernetes, as is the case with the Google Cloud Platform and AWS. 
+
+
+
+##### 9.2.9 ServiceType: ExternalIP
+
+A Service can be mapped to an ExternalIP address if it can route to one or more of the worker nodes. Traffic that is ingressed into the cluster with the ExternalIP (as destination IP) on the Service port, gets routed to one of the the Service endpoints.
+
+![externalIP](externalIP.png)
+
+##### 9.2.10 ServiceType: ExternalName
+
+ExternalName is a special ServiceType, that has no Selectors and does not define any endpoints. When accessed within the cluster, it returns a CNAME record of an externally configured Service.
+
+The primary use case of this ServiceType is to make externally configured Services like my-database.example.com available inside the cluster, using just the name, like my-database, to other Services inside the same Namespace.
+
+### 10. Deploying a Stand-Alone Application  
+
+#### 10.1 Introduction and Learning Objectives  
+
+##### 10.1.1 Introduction
+
+In this chapter, we will learn how to deploy an application using Graphical User Interface (GUI) or Command Line Interface (CLI). We will also expose an application with NodePort, and access it from the external world.
+
+
+
+##### 10.1.2 Learning Objectives
+
+By the end of this chapter, you should be able to:
+
+- Deploy an application from the dashboard.
+- Deploy an application from a YAML file using kubectl.
+- Expose a service using NodePort.
+- Access the application from the external world.
+
+### 11. Kubernetes Volume Management
+
+#### 11.1  Introduction and Learning Objectives  
+
+##### 11.1.1 Introduction
+
+To back a Pod with a persistent storage, Kubernetes uses Volumes. In this chapter, we will learn about Volumes and their types. We will also talk about PersistentVolume and PersistentVolumeClaim objects, which help us attach storage Volumes to Pods. 
+
+##### 11.1.2  Learning Objectives
+
+By the end of this chapter, you should be able to:
+
+- Explain the need for persistent data management.
+- Discuss Kubernetes Volume and its types.
+- Discuss PersistentVolumes and PersistentVolumeClaims.
+
+#### 11.2 Kubernetes Volume Management  
+
+##### 11.2.1 Volumes
+
+As we know, containers, which create the Pods, are ephemeral in nature. All data stored inside a container is deleted if the container crashes. However, the kubelet will restart it with a clean state, which means that it will not have any of the old data.
+
+To overcome this problem, Kubernetes uses Volumes. A Volume is essentially a directory backed by a storage medium. The storage medium and its content are determined by the Volume Type.
+
+![Vomumes](Vomumes.png)
+
+In Kubernetes, a Volume is attached to a Pod and shared among the containers of that Pod. The Volume has the same life span as the Pod, and it outlives the containers of the Pod - this allows data to be preserved across container restarts.
+
+##### 11.2.2 Volume Types
+
+A directory which is mounted inside a Pod is backed by the underlying Volume Type. A Volume Type decides the properties of the directory, like size, content, etc. Some examples of Volume Types are:
+
+- emptyDir
+  An empty Volume is created for the Pod as soon as it is scheduled on the worker node. The Volume's life is tightly coupled with the Pod. If the Pod dies, the content of emptyDir is deleted forever.  
+- hostPath
+  With the hostPath Volume Type, we can share a directory from the host to the Pod. If the Pod dies, the content of the Volume is still available on the host.
+- gcePersistentDisk
+  With the gcePersistentDisk Volume Type, we can mount a Google Compute Engine (GCE) persistent disk into a Pod.
+- awsElasticBlockStore
+  With the awsElasticBlockStore Volume Type, we can mount an AWS EBS Volume into a Pod. 
+- nfs
+  With nfs, we can mount an NFS share into a Pod.
+- iscsi
+  With iscsi, we can mount an iSCSI share into a Pod.
+- secret
+  With the secret Volume Type, we can pass sensitive information, such as passwords, to Pods. We will take a look at an example in a later chapter.
+- persistentVolumeClaim
+  We can attach a PersistentVolume to a Pod using a persistentVolumeClaim. We will cover this in our next section. 
+
+You can learn more details about Volume Types in the Kubernetes documentation.
+
+##### 11.2.3 PersistentVolumes
+
+In a typical IT environment, storage is managed by the storage/system administrators. The end user will just get instructions to use the storage, but does not have to worry about the underlying storage management.
+
+In the containerized world, we would like to follow similar rules, but it becomes challenging, given the many Volume Types we have seen earlier. Kubernetes resolves this problem with the PersistentVolume (PV) subsystem, which provides APIs for users and administrators to manage and consume storage. To manage the Volume, it uses the PersistentVolume API resource type, and to consume it, it uses the PersistentVolumeClaim API resource type.
+
+A Persistent Volume is a network-attached storage in the cluster, which is provisioned by the administrator.
+
+PersistentVolumes can be dynamically provisioned based on the StorageClass resource. A StorageClass contains pre-defined provisioners and parameters to create a PersistentVolume. Using PersistentVolumeClaims, a user sends the request for dynamic PV creation, which gets wired to the StorageClass resource.
+
+Some of the Volume Types that support managing storage using PersistentVolumes are:
+
+- GCEPersistentDisk
+- AWSElasticBlockStore
+- AzureFile
+- NFS
+- iSCSI.
+  For a complete list, as well as more details, you can check out the Kubernetes documentation.
+
+##### 11.2.4  PersistentVolumeClaims
+
+A PersistentVolumeClaim (PVC) is a request for storage by a user. Users request for PersistentVolume resources based on size, access modes, etc. Once a suitable PersistentVolume is found, it is bound to a PersistentVolumeClaim.
+
+![persistentVolumeClaim](persistentVolumeClaim.png)
+
+After a successful bound, the PersistentVolumeClaim resource can be used in a Pod.
+
+![PersistentVolumeClaimUsed](PersistentVolumeClaimUsed.png)
+
+Once a user finishes its work, the attached PersistentVolumes can be released. The underlying PersistentVolumes can then be reclaimed and recycled for future usage. 
+
+##### 11.2.5 Container Storage Interface (CSI)
+
+At the time this course was created, container orchestrators like Kubernetes, Mesos, Docker or Cloud Foundry had their own way of managing external storage using Volumes.
+
+For storage vendors, it is difficult to manage different Volume plugins for different orchestrators. Storage vendors and community members from different orchestrators are working together to standardize the Volume interface; a volume plugin built using a standardized CSI would work on different container orchestrators. You can find CSI specifications here.
+
+Kubernetes 1.9 added alpha support for CSI, which makes installing new CSI-compliant Volume plugins very easy. With CSI, third-party storage providers can develop solutions without the need to add them into the core Kubernetes codebase.
 
