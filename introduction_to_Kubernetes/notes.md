@@ -10,6 +10,7 @@
 
 ### Welcome & Introduction  
 **Course Learning Objectives**
+
 - The origin, architecture, primary components, and building blocks of Kubernetes.
 
 - How to set up and access a Kubernetes cluster using Minikube.
@@ -1232,3 +1233,586 @@ For storage vendors, it is difficult to manage different Volume plugins for diff
 
 Kubernetes 1.9 added alpha support for CSI, which makes installing new CSI-compliant Volume plugins very easy. With CSI, third-party storage providers can develop solutions without the need to add them into the core Kubernetes codebase.
 
+
+
+
+
+### 12. Deploying a Multi-Tier Application  
+
+#### 12.1 Introduction and Learning Objectives  
+
+##### 12.1.1 Introduction
+
+In a typical application, we have different tiers:
+
+- Backend
+- Frontend
+- Caching, etc.
+  In this chapter, we will learn to deploy a multi-tier application with Kubernetes and then scale it. 
+
+##### 12.1.2 Learning Objectives
+
+By the end of this chapter, you should be able to:
+
+- Analyze a sample multi-tier application.
+- Deploy a multi-tier application.
+- Scale an application.
+
+#### 12.2 RSVP Application
+
+We will be using a sample RSVP application. Using this application, users can register for an event by providing their username and email ID. Once a user registers, his/her name and email appears in a table. The application consists of a backend database and a frontend. For the backend, we will be using a MongoDB database, and for the frontend, we have a Python Flask-based application.
+
+### 13. ConfigMaps and Secrets
+
+#### 13.1 Introduction and Learning Objectives  
+
+##### 13.1.1 Introduction
+
+While deploying an application, we may need to pass such runtime parameters like configuration details, passwords, etc. For example, let's assume we need to deploy ten different applications for our customers, and, for each customer, we just need to change the name of the company in the UI. Then, instead of creating ten different Docker images for each customer, we may just use the template image and pass the customers' names as a runtime parameter. In such cases, we can use the ConfigMap API resource. Similarly, when we want to pass sensitive information, we can use the Secret API resource. In this chapter, we will explore ConfigMaps and Secrets.
+
+##### 13.1.2 Learning Objectives
+
+By the end of this chapter, you should be able to:
+
+- Discuss configuration management for applications in Kubernetes using ConfigMaps.
+- Share sensitive data (such as passwords) using Secrets.
+
+#### 13.2  ConfigMaps and Secrets  
+
+##### 13.2.1 ConfigMaps
+
+ConfigMaps allow us to decouple the configuration details from the container image. Using ConfigMaps, we can pass configuration details as key-value pairs, which can be later consumed by Pods, or any other system components, such as controllers. We can create ConfigMaps in two ways:
+
+- From literal values
+- From files.
+
+##### 13.2.2 Create a ConfigMap from Literal Values and Get Its Details
+
+A ConfigMap can be created with the kubectl create command, and we can get the values using the kubectl get command.
+
+Create the ConfigMap
+
+```
+$ kubectl create configmap my-config --from-literal=key1=value1 --from-literal=key2=value2
+configmap "my-config" created 
+
+```
+
+Get the ConfigMap Details for my-config
+
+```yaml
+$ kubectl get configmaps my-config -o yaml
+apiVersion: v1
+data:
+  key1: value1
+  key2: value2
+kind: ConfigMap
+metadata:
+  creationTimestamp: 2017-05-31T07:21:55Z
+  name: my-config
+  namespace: default
+  resourceVersion: "241345"
+  selfLink: /api/v1/namespaces/default/configmaps/my-config
+  uid: d35f0a3d-45d1-11e7-9e62-080027a46057
+```
+
+With the -o yaml option, we are requesting the kubectl command to spit the output in the YAML format. As we can see, the object has the ConfigMap kind, and it has the key-value pairs inside the data field. The name of ConfigMap and other details are part of the metadata field.
+
+
+
+##### 13.2.3 Create a ConfigMap from a Configuration File
+
+First, we need to create a configuration file. We can have a configuration file with the content like:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: customer1
+data:
+  TEXT1: Customer1_Company
+  TEXT2: Welcomes You
+  COMPANY: Customer1 Company Technology Pct. Ltd.
+```
+
+in which we mentioned the kind, metadata, and data fields, which are targeted to connect with the v1 endpoint of the API server.
+
+If we name the file with the configuration above as customer1-configmap.yaml, we can then create the ConfigMap with the following command:
+
+```yaml
+$ kubectl create -f customer1-configmap.yaml
+configmap "customer1" created
+```
+
+##### 13.2.4 Use ConfigMap Inside Pods
+
+**As an Environment Variable**
+We can get the values of the given key as environment variables inside a Pod. In the following example, while creating the Deployment, we are assigning values for environment variables from the customer1 ConfigMap:
+
+```yaml
+....
+ containers:
+      - name: rsvp-app
+        image: teamcloudyuga/rsvpapp
+        env:
+        - name: MONGODB_HOST
+          value: mongodb
+        - name: TEXT1
+          valueFrom:
+            configMapKeyRef:
+              name: customer1
+              key: TEXT1
+        - name: TEXT2
+          valueFrom:
+            configMapKeyRef:
+              name: customer1
+              key: TEXT2
+        - name: COMPANY
+          valueFrom:
+            configMapKeyRef:
+              name: customer1
+              key: COMPANY
+
+....
+```
+
+With the above, we will get the TEXT1 environment variable set to Customer1_Company, TEXT2 environment variable set to Welcomes You, and so on.
+
+As a Volume
+We can mount a ConfigMap as a Volume inside a Pod. For each key, we will see a file in the mount path and the content of that file becomes the respective key's value. For more details, please study the Kubernetes documentation.
+
+
+
+##### 13.2.5 Secrets
+
+Let's assume that we have a Wordpress blog application, in which our wordpress frontend connects to the MySQL database backend using a password. While creating the Deployment for wordpress, we can put down the MySQL password in the Deployment's YAML file, but the password would not be protected. The password would be available to anyone who has access to the configuration file.
+
+In situations such as the one we just mentioned, the Secret object can help. With Secrets, we can share sensitive information like passwords, tokens, or keys in the form of key-value pairs, similar to ConfigMaps; thus, we can control how the information in a Secret is used, reducing the risk for accidental exposures. In Deployments or other system components, the Secret object is referenced, without exposing its content.
+
+**It is important to keep in mind that the Secret data is stored as plain text inside etcd. Administrators must limit the access to the API server and etcd.**
+
+##### 13.2.6 Create the Secret with the 'kubectl create secret' Command
+
+To create a Secret, we can use the kubectl create secret command:
+
+```
+$ kubectl create secret generic my-password --from-literal=password=mysqlpassword
+```
+
+The above command would create a secret called my-password, which has the value of the password key set to mysqlpassword.
+
+##### 13.2.7 'get' and 'describe' the Secret
+
+Analyzing the get and describe examples below, we can see that they do not reveal the content of the Secret. The type is listed as **Opaque**.
+
+```yaml
+$ kubectl get secret my-password
+NAME          TYPE     DATA   AGE 
+my-password   Opaque   1      8m
+
+$ kubectl describe secret my-password
+Name:          my-password
+Namespace:     default
+Labels:        <none>
+Annotations:   <none>
+
+Type  Opaque
+
+Data
+====
+password.txt:  13 bytes
+```
+
+
+
+##### 13.2.8 Create a Secret Manually
+
+We can also create a Secret manually, using the YAML configuration file. With Secrets, each object data must be encoded using base64. If we want to have a configuration file for our Secret, we must first get the base64 encoding for our password:
+
+```bash
+$ echo mysqlpassword | base64
+
+bXlzcWxwYXNzd29yZAo=
+```
+
+and then use it in the configuration file:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: my-password
+type: Opaque
+data:
+  password: bXlzcWxwYXNzd29yZAo=
+```
+
+Please note that base64 encoding does not do any encryption, and anyone can easily decode it:
+
+```bash
+$ echo "bXlzcWxwYXNzd29yZAo=" | base64 --decode
+```
+
+Therefore, make sure you do not commit a Secret's configuration file in the source code.
+
+
+
+##### 13.2.9 Use Secrets Inside Pods
+
+We can get Secrets to be used by containers in a Pod by mounting them as data volumes, or by exposing them as environment variables.
+
+**Using Secrets as Environment Variables**
+As shown in the following example, we can reference a Secret and assign the value of its key as an environment variable **(WORDPRESS_DB_PASSWORD)**:
+
+```yaml
+.....
+         spec:
+      containers:
+      - image: wordpress:4.7.3-apache
+        name: wordpress
+        env:
+        - name: WORDPRESS_DB_HOST
+          value: wordpress-mysql
+        - name: WORDPRESS_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: my-password
+              key: password
+.....
+```
+
+**Using Secrets as Files from a Pod**
+
+We can also mount a Secret as a Volume inside a Pod. A file would be created for each key mentioned in the Secret, whose content would be the respective value. For more details, you can study the Kubernetes documentation.
+
+
+
+### 14. Ingress  
+
+#### 14.1 Introduction and Learning Objectives  
+
+##### 14.1.1 Introduction
+
+In Chapter 9. Services, we saw how we can access our deployed containerized application from the external world. Among the ServiceTypes mentioned in that chapter, NodePort and LoadBalancer are the most often used. For the LoadBalancer ServiceType, we need to have the support from the underlying infrastructure. Even after having the support, we may not want to use it for every Service, as LoadBalancer resources are limited and they can increase costs significantly. Managing the NodePort ServiceType can also be tricky at times, as we need to keep updating our proxy settings and keep track of the assigned ports. In this chapter, we will explore the Ingress, which is another method we can use to access our applications from the external world.
+
+##### 14.1.2 Learning Objectives
+
+By the end of this chapter, you should be able to:
+
+- Explain what Ingress and Ingress Controllers are.
+- Learn when to use Ingress.
+- Access an application from the external world using Ingress.
+
+#### 14.2 Ingress
+
+##### 14.2.1 Ingress I
+
+With Services, routing rules are attached to a given Service. They exist for as long as the Service exists. If we can somehow decouple the routing rules from the application, we can then update our application without worrying about its external access. This can be done using the Ingress resource. 
+
+According to kubernetes.io,
+
+*"An Ingress is a collection of rules that allow inbound connections to reach the cluster Services."*
+
+To allow the inbound connection to reach the cluster Services, Ingress configures a Layer 7 HTTP load balancer for Services and provides the following:
+
+- TLS (Transport Layer Security)
+- Name-based virtual hosting 
+- Path-based routing
+- Custom rules.
+
+![ingress](ingress.png)
+
+##### 14.2.2 Ingress II
+
+With Ingress, users don't connect directly to a Service. Users reach the Ingress endpoint, and, from there, the request is forwarded to the respective Service. You can see an example of a sample Ingress definition below:
+
+```yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: web-ingress
+  namespace: default
+spec:
+  rules:
+  - host: blue.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: webserver-blue-svc
+          servicePort: 80
+  - host: green.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: webserver-green-svc
+          servicePort: 80
+```
+
+According to the example we provided above, users requests to both blue.example.com and green.example.com would go to the same Ingress endpoint, and, from there, they would be forwarded to webserver-blue-svc, and webserver-green-svc, respectively. Here, we have seen an example of a Name-Based Virtual Hosting Ingress rule. 
+
+We can also have Fan Out Ingress rules, in which we send requests like example.com/blue and example.com/green, which would be forwarded to webserver-blue-svc and webserver-green-svc, respectively.
+
+![ingress_url_mapping](ingress_url_mapping.png)
+
+The Ingress resource does not do any request forwarding by itself. All of the magic is done using the Ingress Controller, which we will discuss next.
+
+##### 14.2.3  Ingress Controller
+
+An Ingress Controller is an application which watches the Master Node's API server for changes in the Ingress resources and updates the Layer 7 Load Balancer accordingly. Kubernetes has different Ingress Controllers, and, if needed, we can also build our own. GCE L7 Load Balancer and Nginx Ingress Controller are examples of Ingress Controllers. 
+
+**Start the Ingress Controller with Minikube**
+
+Minikube v0.14.0 and above ships the Nginx Ingress Controller setup as an add-on. It can be easily enabled by running the following command:
+
+```bash
+$ minikube addons enable ingress
+```
+
+##### 14.2.4 Deploy an Ingress Resource
+
+Once the Ingress Controller is deployed, we can create an Ingress resource using the kubectl create command. For example, if we create a webserver-ingress.yaml file with the content that we saw on the Ingress II page, then, we will use the following command to create an Ingress resource:
+
+```bash
+$ kubectl create -f webserver-ingress.yaml
+```
+
+
+
+##### 14.2.5  Access Services Using Ingress
+
+With the Ingress resource we just created, we should now be able to access the webserver-blue-svc or webserver-green-svc services using the blue.example.com and green.example.com URLs. As our current setup is on Minikube, we will need to update the host configuration file (/etc/hosts on Mac and Linux) on our workstation to the Minikube IP for those URLs:
+
+```bash
+$ cat /etc/hosts
+127.0.0.1        localhost
+::1              localhost
+192.168.99.100   blue.example.com green.example.com 
+```
+
+Once this is done, we can open blue.example.com and green.example.com on the browser and access the application.
+
+
+
+###  15. Advanced Topics - Overview
+
+#### 15.1 Introduction and Learning Objectives
+
+##### 15.1.1 **Introduction**
+
+So far, in this course, we have spend most of our time understanding the basic Kubernetes concepts and simple workflows to build a solid foundation. To support enterprise class production workloads, Kubernetes can do auto-scaling, rollbacks, quota management, RBAC, etc. In this chapter, we will get a high-level overview about such advanced topics, but diving into details would be out of scope for this course. 
+
+##### 15.1.2 Learning Objectives
+
+By the end of this chapter, you should be able to:
+
+- Discuss advanced Kubernetes concepts: DaemonSets, StatefulSets, Helm, etc.
+
+#### 15.2  Advanced Topics - Overview
+
+##### 15.2.1 Annotations
+
+With Annotations, we can attach arbitrary non-identifying metadata to any objects, in a key-value format:
+
+```json
+"annotations": {
+  "key1" : "value1",
+  "key2" : "value2"
+}
+
+```
+
+In contrast to Labels, annotations are not used to identify and select objects. Annotations can be used to:
+
+- Store build/release IDs, PR numbers, git branch, etc.
+- Phone/pager numbers of people responsible, or directory entries specifying where such information can be found
+- Pointers to logging, monitoring, analytics, audit repositories, debugging tools, etc.
+- Etc.
+
+ For example, while creating a Deployment, we can add a description like the one below:
+
+```yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: webserver
+  annotations:
+    description: Deployment based PoC dates 2nd June'2017
+....
+....	
+```
+
+We can look at annotations while describing an object:
+
+```bash
+$ kubectl describe deployment webserver
+Name:                webserver
+Namespace:           default
+CreationTimestamp:   Sat, 03 Jun 2017 05:10:38 +0530
+Labels:              app=webserver
+Annotations:         deployment.kubernetes.io/revision=1
+                     description=Deployment based PoC dates 2nd June'2017
+...
+...
+```
+
+##### 15.2.2 Deployment Features
+
+Earlier, we have seen how we can use the Deployment object to deploy an application. This is just a basic functionality. We can do more interesting things, like recording a Deployment - if something goes wrong, we can revert to the working state.
+
+The graphic below depicts a situation in which our update fails:
+
+![deployment_update_fail](deployment_update_fail.png)
+
+If we have recorded our Deployment before doing the update, we can revert back to a known working state.
+
+![deployment_roll_back](deployment_roll_back.png)
+
+In addition, the Deployment object also provides the following features:
+
+- Autoscaling
+- Proportional scaling
+- Pausing and resuming.
+
+##### 15.2.3 Jobs
+
+A Job creates one or more Pods to perform a given task. The Job object takes the responsibility of Pod failures. It makes sure that the given task is completed successfully. Once the task is over, all the Pods are terminated automatically.
+
+Starting with the Kubernetes 1.4 release, we can also perform Jobs at specified times/dates, such as cron jobs. 
+
+##### 15.2.4 Quota Management
+
+When there are many users sharing a given Kubernetes cluster, there is always a concern for fair usage. A user should not take undue advantage. To address this concern, administrators can use the ResourceQuota object, which provides constraints that limit aggregate resource consumption per Namespace.
+
+We can have the following types of quotas per Namespace:
+
+- **Compute Resource Quota**
+  We can limit the total sum of compute resources (CPU, memory, etc.) that can be requested in a given Namespace.
+- **Storage Resource Quota**
+  We can limit the total sum of storage resources (PersistentVolumeClaims, requests.storage, etc.) that can be requested.
+- **Object Count Quota**
+  We can restrict the number of objects of a given type (pods, ConfigMaps, PersistentVolumeClaims, ReplicationControllers, Services, Secrets, etc.).
+
+
+
+##### 15.2.5 DaemonSets
+
+
+
+In some cases, like collecting monitoring data from all nodes, or running a storage daemon on all nodes, etc., we need a specific type of Pod running on all nodes at all times. A DaemonSet is the object that allows us to do just that. 
+
+Whenever a node is added to the cluster, a Pod from a given DaemonSet is created on it. When the node dies, the respective Pods are garbage collected. If a DaemonSet is deleted, all Pods it created are deleted as well.
+
+
+
+##### 15.2.6 StatefulSets
+
+The StatefulSet controller is used for applications which require a unique identity, such as name, network identifications, strict ordering, etc. For example, MySQL cluster, etcd cluster.
+
+The StatefulSet controller provides identity and guaranteed ordering of deployment and scaling to Pods.
+
+The StatefulSet controller provides identity and guaranteed ordering of deployment and scaling to Pods.
+
+##### 15.2.7 Kubernetes Federation
+
+With the Kubernetes Cluster Federation we can manage multiple Kubernetes clusters from a single control plane. We can sync resources across the clusters and have cross-cluster discovery. This allows us to do Deployments across regions and access them using a global DNS record.
+
+The Federation is very useful when we want to build a hybrid solution, in which we can have one cluster running inside our private datacenter and another one on the public cloud. We can also assign weights for each cluster in the Federation, to distribute the load as per our choice.
+
+##### 15.2.8 Custom Resources
+
+In Kubernetes, a resource is an API endpoint which stores a collection of API objects. For example, a Pod resource contains all the Pod objects.
+
+Although in most cases existing Kubernetes resources are sufficient to fulfill our requirements, we can also create new resources using custom resources. With custom resources, we don't have to modify the Kubernetes source.
+
+Custom resources are dynamic in nature, and they can appear and disappear in an already running cluster at any time.
+
+To make a resource declarative, we must create and install a custom controller, which can interpret the resource structure and perform the required actions. Custom controllers can be deployed and managed in an already running cluster.
+
+There are two ways to add custom resources:
+
+- Custom Resource Definitions (CRDs)
+  This is the easiest way to add custom resources and it does not require any programming knowledge. However, building the custom controller would require some programming.
+- API Aggregation
+  For more fine-grained control, we can write API Aggregators. They are subordinate API servers which sit behind the primary API server and act as proxy.
+
+##### 15.2.9 Helm
+
+To deploy an application, we use different Kubernetes manifests, such as Deployments, Services, Volume Claims, Ingress, etc. Sometimes, it can be tiresome to deploy them one by one. We can bundle all those manifests after templatizing them into a well-defined format, along with other metadata. Such a bundle is referred to as Chart. These Charts can then be served via repositories, such as those that we have for rpm and deb packages. 
+
+Helm is a package manager (analogous to yum and apt) for Kubernetes, which can install/update/delete those Charts in the Kubernetes cluster.
+
+Helm has two components:
+
+- A client called helm, which runs on your user's workstation
+- A server called tiller, which runs inside your Kubernetes cluster. 
+
+The client helm connects to the server tiller to manage Charts. Charts submitted for Kubernetes are available here.
+
+##### 15.2.10 Monitoring and Logging
+
+In Kubernetes, we have to collect resource usage data by Pods, Services, nodes, etc., to understand the overall resource consumption and to make decisions for scaling a given application. Two popular Kubernetes monitoring solutions are Heapster and Prometheus.
+
+- Heapster 
+  Heapster is a cluster-wide aggregator of monitoring and event data, which is natively supported on Kubernetes. 
+- Prometheus
+  Prometheus, now part of CNCF (Cloud Native Computing Foundation), can also be used to scrape the resource usage from different Kubernetes components and objects. Using its client libraries, we can also instrument the code of our application.
+
+Another important aspect for troubleshooting and debugging is Logging, in which we collect the logs from different components of a given system. In Kubernetes, we can collect logs from different cluster components, objects, nodes, etc. The most common way to collect the logs is using Elasticsearch, which uses fluentd with custom configuration as an agent on the nodes. fluentd is an open source data collector, which is also part of CNCF.
+
+
+
+### 16.  Kubernetes Community
+
+#### 16.1 Introduction and Learning Objectives
+
+##### 16.1.1 Introduction
+
+Just as with any other open source project, the community plays a vital role in Kubernetes. The community decides the roadmap of the projects and works towards it. The community gets engaged in different online and offline forums, like Meetups, Slack, Weekly meetings, etc. In this chapter, we will explore the Kubernetes community and see how you can become a part of it, too. 
+
+##### 16.1.2 Learning Objectives
+
+By the end of this chapter, you should be able to:
+
+- Understand the importance of Kubernetes community.
+- Learn about the different channels to interact with the Kubernetes community.
+- List major CNCF events.
+
+#### 16.2 Kubernetes Community  
+
+##### 16.2.1 Kubernetes Community
+
+With more than 33 thousand GitHub stars, Kubernetes is one of the most popular open source projects. The community members not only help with the source code, but they also help with sharing the knowledge. The community engages in both online and offline activities.
+
+Currently, there is a project called K8sPort, which recognizes and rewards community members for their contributions to Kubernetes. This contribution can be in the form of code, attending and speaking at meetups, answering questions on Stack Overflow, etc.
+
+Next, we will review some of the mediums used by the Kubernetes community.
+
+
+
+##### 16.2.2 Weekly Meetings and Meetup Groups
+
+- Weekly Meetings
+  A weekly community meeting happens using video conference tools. You can get a calendar invite from here.
+
+- Meetup Groups
+  There are many meetup groups around the world, where local community members meet at regular intervals to discuss Kubernetes and its ecosystem.
+
+There are some online meetup groups as well, where community members can meet virtually.
+
+##### 16.2.3 Slack Channels and Mailing Lists
+
+- Slack Channels
+  Community members are very active on the Kubernetes Slack. There are different channels based on topics, and anyone can join and participate in the discussions. You can discuss with the Kubernetes team on the #kubernetes-users channel. 
+
+- Mailing Lists
+  There are Kubernetes users and developers mailing lists, which can be joined by anybody interested.
+
+##### 16.2.4 SIGs and Stack Overflow
+
+- Special Interest Groups
+  Special Interest Groups (SIGs) focus on specific parts of the Kubernetes project, like scheduling, authorization, networking, documentation, etc. Each group may have a different workflow, based on its specific requirements. A list with all the current SIGs can be found [here](https://github.com/kubernetes/community/blob/master/sig-list.md).
+
+  Depending on the need, a new SIG can be created.
+
+- Stack Overflow
+  Besides Slack and mailing lists, community members can get support from Stack Overflow, as well. Stack Overflow is an online environment where you can post questions that you cannot find an answer for. The Kubernetes team also monitors the posts tagged Kubernetes.
