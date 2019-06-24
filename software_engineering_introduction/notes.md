@@ -209,4 +209,19 @@ Each product stakeholder is going to need a different form of documentation in o
    - Next, we have the Scrum Master. The Scrum Master's job is to manage the development process. So they're not the manager of the team, but they're the manager of the process. They make sure that the team is on track, and is working specifically on the issues for that sprint that the product owner has prioritized as being important.
    - And finally, we have the team themselves. So Scrum-based teams are typically five to seven people,and span a variety of disciplines. So we might have developers, QA, and ops all on the same Scrum team, working together to build a product. 
 
-![屏幕快照 2019-06-20 10.15.46](屏幕快照 2019-06-20 10.15.46.png)
+## ![屏幕快照 2019-06-20 10.15.46](屏幕快照 2019-06-20 10.15.46.png)
+
+### 3. Specifications  
+
+#### 3.1 Module Overview
+
+**Learning Goals:**
+
+- Learn how specifications help customers and software engineering teams communicate about software development projects
+- Learn about the process of gathering and validating requirements
+- Learn how user stories are commonly used as specifications in practice
+- Learn how to generate high quality user stories that adhere to the INVEST design guidelines
+
+#### 3.2 Introduction to Specifications
+
+1. The specification of the software system is one of the most important documents to connect the customer and the engineering team.
