@@ -21,11 +21,20 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="FibonacciLastDigit.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="FibonacciLastDigit.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/challenge2_2/FibonacciLastDigit.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="315">
               <caret line="15" column="41" selection-start-line="15" selection-start-column="41" selection-end-line="15" selection-end-column="41" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Change.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/com/challenge3_1/Change.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="336">
+              <caret line="16" column="21" selection-start-line="16" selection-start-column="21" selection-end-line="16" selection-end-column="21" />
             </state>
           </provider>
         </entry>
@@ -65,6 +74,7 @@
         <option value="$PROJECT_DIR$/src/com/challenge2_2/FibonacciLastDigit.java" />
         <option value="$PROJECT_DIR$/src/com/challenge2_3/GCD.java" />
         <option value="$PROJECT_DIR$/src/com/challenge2_4/LCM.java" />
+        <option value="$PROJECT_DIR$/src/com/challenge3_1/Change.java" />
       </list>
     </option>
   </component>
@@ -146,20 +156,6 @@
               <item name="Code" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="com" type="462c0819:PsiDirectoryNode" />
-              <item name="challenge2_1" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Code" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Code" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="com" type="462c0819:PsiDirectoryNode" />
-              <item name="challenge2_2" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Code" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Code" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="com" type="462c0819:PsiDirectoryNode" />
               <item name="challenge2_4" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
@@ -187,7 +183,17 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.LCM">
+  <component name="RunManager" selected="Application.Change">
+    <configuration name="Change" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.challenge3_1.Change" />
+      <module name="Code" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.challenge3_1.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+    </configuration>
     <configuration name="Fibonacci" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.challenge2_1.Fibonacci" />
       <module name="Code" />
@@ -245,9 +251,11 @@
       <item itemvalue="Application.Fibonacci" />
       <item itemvalue="Application.GCD" />
       <item itemvalue="Application.LCM" />
+      <item itemvalue="Application.Change" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Change" />
         <item itemvalue="Application.LCM" />
         <item itemvalue="Application.GCD" />
         <item itemvalue="Application.Fibonacci" />
@@ -266,15 +274,16 @@
       <updated>1561056444829</updated>
       <workItem from="1561056446213" duration="5724000" />
       <workItem from="1561125576728" duration="994000" />
-      <workItem from="1561384371652" duration="757000" />
+      <workItem from="1561384371652" duration="1289000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="7475000" />
+    <option name="totallyTimeSpent" value="8007000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1392" height="877" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="right" id="Palette&#9;" order="3" />
@@ -398,6 +407,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="315">
           <caret line="15" column="41" selection-start-line="15" selection-start-column="41" selection-end-line="15" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/challenge3_1/Change.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="336">
+          <caret line="16" column="21" selection-start-line="16" selection-start-column="21" selection-end-line="16" selection-end-column="21" />
         </state>
       </provider>
     </entry>
