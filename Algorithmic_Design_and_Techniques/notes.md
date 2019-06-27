@@ -170,3 +170,15 @@ A greedy choice is called safe choice if there is an optimal solution consistent
 
 ![](Screen Shot 2019-06-24 at 17.20.58.png)
 
+### 3.2 Celebration Party  
+
+### 3.3 Maximizing Loot  
+
+##### 3.2.3 review
+
+Main Ingredients：
+
+- Safe choice
+- Prove safety
+- Solve subproblem
+- Estimate running time
