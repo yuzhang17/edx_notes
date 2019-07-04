@@ -182,3 +182,38 @@ Main Ingredients：
 - Prove safety
 - Solve subproblem
 - Estimate running time
+
+
+
+in my  opinion：
+
+- safety greedy choice
+- iterate solve subproblem
+- estimate running time 
+
+## 4. Divide-and-Conquer
+
+### 4.1 introduction 
+
+##### 4.1.1 intro
+
+1. Break into non-overlapping subproblems of the same type
+2. Solve subproblems
+3. Combine results
+
+##### 4.1.2 Linear Search
+
+**Summary**
+
+- Create a recursive solution
+- Define a corresponding recurrence relation, T
+- Determine T(n): worst-case runtime
+- Optionally, create iterative solution
+
+##### 4.1.3 Binary Search
+
+**summary**
+
+- Break problem into non-overlapping subproblems of the same type.
+- Recursively solve those subproblems.
+- Combine results of subproblems.
