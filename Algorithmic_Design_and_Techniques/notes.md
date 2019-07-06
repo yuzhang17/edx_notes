@@ -217,3 +217,50 @@ in my  opinion：
 - Break problem into non-overlapping subproblems of the same type.
 - Recursively solve those subproblems.
 - Combine results of subproblems.
+
+### 4.2 Master Theorem  
+
+#### What is the Master Theorem?
+
+![Screen Shot 2019-07-04 at 2.50.02 PM](Screen Shot 2019-07-04 at 2.50.02 PM.png)
+
+T(n) = 4T(︁n/2)︁ + O(n)   Since d < logb a, T(n) = O(nlogb a) = O($n ^2$)
+
+T(n) = 3T(︁n/2)︁ + O(n)   Since d < logb a, T(n) = O(nlogb a) = O($n^(log2^3)$)
+
+T(n) = 2T(︁n/2)︁ + O(n)   Since d = logb a,    T(n) = O(nd log n) = O(n log n)
+
+T(n) = T(︁n/2)︁ + O(1)     Since d = logb a, T(n) = O(nd log n) = O(n0 log n) = O(log n)
+
+### 4.3 Sorting Problem  
+
+####  Selection Sort
+
+- Selection sort is an easy to implement algorithm with running time O(n2).
+- Sorts in place: requires a constant amount of extra memory.
+- There are many other quadratic time sorting algorithms: e.g., insertion sort,
+  bubble sort.
+
+#### merge Sort
+
+The running time of MergeSort(A[1 . . . n]) is O(n log n).
+
+
+
+#### Lower Bound for Comparison Based Sorting
+
+Any comparison based sorting algorithm performs Ω(n log n) comparisons in the worst case to sort n objects.
+
+#### Non-Comparison Based Sorting Algorithms
+
+**Summary**
+
+- Merge sort uses the divide-and-conquer strategy to sort an n-element array in time O(n log n).
+- No comparison based algorithm can do this (asymptotically) faster.
+- One can do faster if something is known about the input array in advance (e.g., itcontains small integers).
+
+### 4.4 Quick Sort  
+
+- Quick sort is a comparison based algorithm
+- Running time: O(n log n) on average, O(n2) in the worst case
+- Efficient in practice
