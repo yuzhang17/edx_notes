@@ -264,3 +264,13 @@ Any comparison based sorting algorithm performs Ω(n log n) comparisons in the w
 - Quick sort is a comparison based algorithm
 - Running time: O(n log n) on average, O(n2) in the worst case
 - Efficient in practice
+
+
+
+
+
+## 5. Dynamic programming1
+
+### 5.1 change problem
+
+#### 5.1.1 change problem
